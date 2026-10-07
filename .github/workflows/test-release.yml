@@ -18,6 +18,10 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: normogram-test-release
+  cancel-in-progress: true
+
 jobs:
   android:
     name: Build Android APK
@@ -56,6 +60,14 @@ jobs:
               "client_info": {
                 "mobilesdk_app_id": "1:123456789012:android:0000000000000000",
                 "android_client_info": {"package_name": "org.normogram.messenger.web"}
+              },
+              "oauth_client": [],
+              "api_key": [{"current_key": "test-build-placeholder"}],
+              "services": {"appinvite_service": {"other_platform_oauth_client": []}}
+            }, {
+              "client_info": {
+                "mobilesdk_app_id": "1:123456789012:android:1111111111111111",
+                "android_client_info": {"package_name": "org.normogram.messenger"}
               },
               "oauth_client": [],
               "api_key": [{"current_key": "test-build-placeholder"}],
