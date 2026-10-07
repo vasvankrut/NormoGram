@@ -30,7 +30,7 @@ public class BuildVars {
     // Continuous integration injects them from the NORMOGRAM_API_ID and
     // NORMOGRAM_API_HASH repository secrets. Local builds can pass
     // -PNORMOGRAM_API_ID=... -PNORMOGRAM_API_HASH=... to Gradle.
-    public static int APP_ID = Integer.parseInt(BuildConfig.NORMOGRAM_API_ID);
+    public static int APP_ID = BuildConfig.NORMOGRAM_API_ID;
     public static String APP_HASH = BuildConfig.NORMOGRAM_API_HASH;
 
     // SafetyNet key for Google Identity SDK, set it to empty to disable
