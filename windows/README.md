@@ -5,7 +5,7 @@
 ## Перед сборкой
 
 1. Подготовьте Visual Studio, SDK и зависимости по [инструкции сборки Windows](docs/building-win.md).
-2. Получите собственные `api_id` и `api_hash` Telegram API и задайте их параметрами CMake `TDESKTOP_API_ID` и `TDESKTOP_API_HASH`. Инструкция по получению ключей: [Telegram API](https://core.telegram.org/api/obtaining_api_id).
+2. Для тестовой сборки можно включить штатные ограниченные данные Telegram через CMake `-D TDESKTOP_API_TEST=ON`. Для публикации получите собственные `api_id` и `api_hash` Telegram API и задайте их параметрами `TDESKTOP_API_ID` и `TDESKTOP_API_HASH`. Инструкция: [Telegram API](https://core.telegram.org/api/obtaining_api_id).
 3. Не добавляйте ключи, сертификаты или signing secrets в Git.
 
 ## Изменения NormoGram

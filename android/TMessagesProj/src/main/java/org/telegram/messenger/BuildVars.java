@@ -26,9 +26,10 @@ public class BuildVars {
     public static boolean NO_SCOPED_STORAGE = Build.VERSION.SDK_INT <= 29;
     public static String BUILD_VERSION_STRING = BuildConfig.BUILD_VERSION_STRING;
 
-    // Set these to the credentials issued for the NormoGram application.
-    public static int APP_ID = 0;
-    public static String APP_HASH = "";
+    // Telegram's public test-only credentials. Do not use in a public release:
+    // Telegram limits these credentials and login may fail for end users.
+    public static int APP_ID = 17349;
+    public static String APP_HASH = "344583e45741c457fe1862106095a5eb";
 
     // SafetyNet key for Google Identity SDK, set it to empty to disable
     public static String SAFETYNET_KEY = "";
