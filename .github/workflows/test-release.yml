@@ -1,0 +1,156 @@
+name: Build and publish test installers
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: Existing prerelease to attach the test installers to
+        required: true
+        type: choice
+        options:
+          - v0.1.0-alpha.2
+
+permissions:
+  contents: write
+
+jobs:
+  android:
+    name: Build Android APK
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v7
+
+      - name: Set up Java
+        uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v4
+
+      - name: Install Android build packages
+        run: sdkmanager "platforms;android-36" "build-tools;36.0.0" "ndk;27.2.12479018" "cmake;3.22.1"
+
+      - name: Prepare test-only Firebase config and signing key
+        working-directory: android
+        run: |
+          mkdir -p TMessagesProj/config
+          keytool -genkeypair -noprompt -keystore TMessagesProj/config/release.keystore \
+            -storepass android -keypass android -alias androidkey -keyalg RSA -keysize 2048 \
+            -validity 3650 -dname "CN=NormoGram Test Build, OU=CI, O=NormoGram, L=Unknown, ST=Unknown, C=US"
+          cat > TMessagesProj_AppStandalone/google-services.json <<'JSON'
+          {
+            "project_info": {
+              "project_number": "123456789012",
+              "project_id": "normogram-test-build",
+              "storage_bucket": "normogram-test-build.appspot.com"
+            },
+            "client": [{
+              "client_info": {
+                "mobilesdk_app_id": "1:123456789012:android:0000000000000000",
+                "android_client_info": {"package_name": "org.normogram.messenger.web"}
+              },
+              "oauth_client": [],
+              "api_key": [{"current_key": "test-build-placeholder"}],
+              "services": {"appinvite_service": {"other_platform_oauth_client": []}}
+            }],
+            "configuration_version": "1"
+          }
+          JSON
+
+      - name: Build universal test APK
+        working-directory: android
+        run: bash ./gradlew --no-daemon :TMessagesProj_AppStandalone:assembleAfatDebug
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-apk
+          path: android/TMessagesProj_AppStandalone/build/outputs/apk/afat/debug/app.apk
+          if-no-files-found: error
+          retention-days: 3
+
+  windows:
+    name: Build Windows EXE
+    runs-on: windows-2025
+    timeout-minutes: 360
+    defaults:
+      run:
+        shell: cmd
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v7
+
+      - name: Set up Visual Studio build environment
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x64
+          sdk: 10.0.26100.0
+          toolset: 14.44
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.10"
+
+      - name: Prepare Windows dependencies
+        working-directory: windows
+        run: Telegram\build\prepare\win.bat skip-release silent
+
+      - name: Configure test build
+        working-directory: windows\Telegram
+        run: configure.bat x64 -D TDESKTOP_API_TEST=ON -D DESKTOP_APP_DISABLE_AUTOUPDATE=ON -D DESKTOP_APP_DISABLE_CRASH_REPORTS=ON -D CMAKE_CONFIGURATION_TYPES=Release
+
+      - name: Compile Windows client
+        working-directory: windows\Telegram
+        run: cmake --build ..\out --config Release --parallel
+
+      - name: Upload Windows executables
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-exe
+          path: windows/out/Release/Telegram.exe
+          if-no-files-found: error
+          retention-days: 3
+
+  publish:
+    name: Attach installers to GitHub release
+    needs: [android, windows]
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: release-assets
+
+      - name: Rename Windows app for NormoGram
+        run: mv release-assets/windows-exe/Telegram.exe release-assets/windows-exe/NormoGram.exe
+
+      - name: Publish installers
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ github.event_name == 'workflow_dispatch' && inputs.release_tag || github.ref_name }}
+        run: |
+          printf '%s\n' \
+            'Experimental test build of NormoGram.' \
+            '' \
+            'Assets: universal Android APK and Windows x64 executable. Both builds use Telegram test-only API credentials. The test credentials are rate-limited and are not suitable for a public production release.' \
+            '' \
+            'The Android build uses a temporary CI signing key and placeholder Firebase configuration. Push notifications are not configured.' \
+            '' \
+            'NormoGram is an unofficial open-source Telegram client and is not affiliated with Telegram FZ-LLC.' \
+            > release-notes.md
+          if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
+            gh release edit "$RELEASE_TAG" --title "NormoGram $RELEASE_TAG — test build" --notes-file release-notes.md --prerelease
+          else
+            gh release create "$RELEASE_TAG" --title "NormoGram $RELEASE_TAG — test build" --notes-file release-notes.md --prerelease
+          fi
+          gh release upload "$RELEASE_TAG" \
+            release-assets/android-apk/app.apk \
+            release-assets/windows-exe/NormoGram.exe \
+            --clobber
