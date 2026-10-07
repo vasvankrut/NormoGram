@@ -64,6 +64,7 @@ jobs:
             "configuration_version": "1"
           }
           JSON
+          cp TMessagesProj/google-services.json TMessagesProj_AppStandalone/google-services.json
 
       - name: Build universal test APK
         working-directory: android
