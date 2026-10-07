@@ -14,9 +14,15 @@ on:
         type: choice
         options:
           - v0.1.0-alpha.2
+      build_windows:
+        description: Build the Windows executable in this run
+        required: false
+        type: boolean
+        default: false
 
 permissions:
   contents: write
+  actions: read
 
 concurrency:
   group: normogram-test-release
@@ -40,35 +46,7 @@ jobs:
         uses: android-actions/setup-android@v4
 
       - name: Install Android build packages
-        env:
-          ANDROID_SDK_ROOT: ${{ env.ANDROID_SDK_ROOT }}
-        run: |
-          set -uo pipefail
-          PACKAGES=("platforms;android-36" "build-tools;36.0.0" "ndk;27.2.12479018" "cmake;3.22.1")
-          installed=0
-          for attempt in 1 2 3 4; do
-            echo "::group::sdkmanager attempt $attempt"
-            yes | sdkmanager --licenses >/dev/null 2>&1 || true
-            if sdkmanager "${PACKAGES[@]}"; then
-              installed=1
-              echo "::endgroup::"
-              break
-            fi
-            echo "::endgroup::"
-            echo "sdkmanager attempt $attempt failed; removing partially downloaded packages"
-            rm -rf "${ANDROID_SDK_ROOT}/ndk/27.2.12479018" \
-                   "${ANDROID_SDK_ROOT}/.temp" \
-                   "${ANDROID_SDK_ROOT}/.knownPackages" || true
-            sleep $((attempt * 15))
-          done
-          if [ "$installed" != "1" ]; then
-            echo "sdkmanager could not install the required packages after 4 attempts"
-            exit 1
-          fi
-          test -d "${ANDROID_SDK_ROOT}/platforms/android-36"
-          test -d "${ANDROID_SDK_ROOT}/build-tools/36.0.0"
-          test -d "${ANDROID_SDK_ROOT}/ndk/27.2.12479018"
-          test -d "${ANDROID_SDK_ROOT}/cmake/3.22.1"
+        run: sdkmanager "platforms;android-36" "build-tools;36.0.0" "ndk;27.2.12479018" "cmake;3.22.1"
 
       - name: Prepare test-only Firebase config and signing key
         working-directory: android
@@ -100,6 +78,14 @@ jobs:
               "oauth_client": [],
               "api_key": [{"current_key": "test-build-placeholder"}],
               "services": {"appinvite_service": {"other_platform_oauth_client": []}}
+            }, {
+              "client_info": {
+                "mobilesdk_app_id": "1:123456789012:android:2222222222222222",
+                "android_client_info": {"package_name": "org.telegram.messenger"}
+              },
+              "oauth_client": [],
+              "api_key": [{"current_key": "test-build-placeholder"}],
+              "services": {"appinvite_service": {"other_platform_oauth_client": []}}
             }],
             "configuration_version": "1"
           }
@@ -108,17 +94,7 @@ jobs:
 
       - name: Build universal test APK
         working-directory: android
-        run: |
-          set -uo pipefail
-          for attempt in 1 2 3; do
-            if bash ./gradlew --no-daemon :TMessagesProj_AppStandalone:assembleAfatDebug; then
-              exit 0
-            fi
-            echo "gradle attempt $attempt failed; retrying"
-            sleep $((attempt * 20))
-          done
-          echo "gradle build failed after 3 attempts"
-          exit 1
+        run: bash ./gradlew --no-daemon :TMessagesProj_AppStandalone:assembleAfatDebug
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
@@ -130,6 +106,7 @@ jobs:
 
   windows:
     name: Build Windows EXE
+    if: github.event_name != 'workflow_dispatch' || inputs.build_windows
     runs-on: windows-2025
     timeout-minutes: 360
     defaults:
@@ -174,7 +151,11 @@ jobs:
   publish:
     name: Attach installers to GitHub release
     needs: [android, windows]
+    if: always() && needs.android.result == 'success'
     runs-on: ubuntu-24.04
+    env:
+      PREVIOUS_WINDOWS_RUN: 37665316276
+      GH_TOKEN: ${{ github.token }}
     steps:
       - name: Download build artifacts
         uses: actions/download-artifact@v4
@@ -182,12 +163,30 @@ jobs:
           path: release-assets
 
       - name: Rename Windows app for NormoGram
-        run: mv release-assets/windows-exe/Telegram.exe release-assets/windows-exe/NormoGram.exe
+        run: |
+          set -uo pipefail
+          if [ -f release-assets/windows-exe/Telegram.exe ]; then
+            mv release-assets/windows-exe/Telegram.exe release-assets/windows-exe/NormoGram.exe
+            echo "using Windows build from this run"
+            exit 0
+          fi
+          echo "Windows job did not run in this workflow run; fetching the executable from run $PREVIOUS_WINDOWS_RUN"
+          mkdir -p release-assets/windows-exe
+          curl -sSL -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/$GITHUB_REPOSITORY/actions/runs/$PREVIOUS_WINDOWS_RUN/artifacts" \
+            -o artifacts.json
+          artifact_id=$(grep -o '"id": *[0-9]*' artifacts.json | head -n 1 | tr -dc '0-9')
+          test -n "$artifact_id" || { echo "no artifact found in the previous run"; exit 1; }
+          curl -sSL -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/$GITHUB_REPOSITORY/actions/artifacts/$artifact_id/zip" \
+            -o windows-artifact.zip
+          unzip -o -q windows-artifact.zip -d release-assets/windows-exe
+          mv release-assets/windows-exe/Telegram.exe release-assets/windows-exe/NormoGram.exe
 
       - name: Publish installers
         env:
           GH_TOKEN: ${{ github.token }}
-          RELEASE_TAG: ${{ github.event_name == 'workflow_dispatch' && inputs.release_tag || github.ref_name }}
+          RELEASE_TAG: ${{ github.event_name == 'workflow_dispatch' && inputs.release_tag || startsWith(github.ref, 'refs/tags/v') && github.ref_name || 'v0.1.0-alpha.2' }}
         run: |
           printf '%s\n' \
             'Experimental test build of NormoGram.' \

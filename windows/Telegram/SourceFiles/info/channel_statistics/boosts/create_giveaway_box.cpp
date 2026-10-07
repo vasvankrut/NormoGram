@@ -1278,7 +1278,9 @@ void CreateGiveawayBox(
 			tr::lng_giveaway_date(),
 			state->dateValue.value() | rpl::map(
 				base::unixtime::parse
-			) | rpl::map(Ui::FormatDateTime),
+			) | rpl::map([](const QDateTime &value) {
+				return Ui::FormatDateTime(value);
+			}),
 			st::defaultSettingsButton);
 
 		button->setClickedCallback([=] {

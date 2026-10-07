@@ -8,12 +8,13 @@ For license and copyright information please follow the link in the repository r
 #include "core/application.h"
 #include "core/core_settings.h"
 #include "lang/lang_keys.h"
+#include "settings/sections/settings_main.h"
 #include "settings/settings_builder.h"
 #include "settings/settings_common_session.h"
-#include "settings/sections/settings_main.h"
-#include "ui/widgets/checkbox.h"
 #include "ui/ui_utility.h"
+#include "ui/widgets/checkbox.h"
 #include "ui/wrap/vertical_layout.h"
+#include "window/window_session_controller.h"
 #include "styles/style_menu_icons.h"
 #include "styles/style_settings.h"
 
@@ -36,24 +37,7 @@ void ApplyApplicationIcon() {
 	}
 }
 
-class NormoGramSettings final : public Section<NormoGramSettings> {
-public:
-	NormoGramSettings(
-		QWidget *parent,
-		not_null<Window::SessionController*> controller);
-
-	[[nodiscard]] rpl::producer<QString> title() override;
-
-private:
-	void setupContent();
-};
-
-const auto kMeta = BuildHelper({
-	.id = NormoGramSettings::Id(),
-	.parentId = MainId(),
-	.title = &tr::lng_normogram_settings,
-	.icon = &st::menuIconManage,
-}, [](SectionBuilder &builder) {
+void BuildNormoGramSectionContent(SectionBuilder &builder) {
 	builder.addSkip();
 
 	const auto showSeconds = builder.addCheckbox({
@@ -64,7 +48,9 @@ const auto kMeta = BuildHelper({
 	});
 	if (showSeconds) {
 		showSeconds->checkedChanges() | rpl::on_next([=](bool checked) {
-			Core::App().settings().writePref<bool>(kShowSecondsKey, checked);
+			Core::App().settings().writePref<bool>(
+				kShowSecondsKey,
+				checked);
 			Core::App().saveSettingsDelayed();
 		}, showSeconds->lifetime());
 	}
@@ -84,13 +70,24 @@ const auto kMeta = BuildHelper({
 			ApplyApplicationIcon();
 		}, nightIcon->lifetime());
 	}
-});
+}
 
-const SectionBuildMethod kNormoGramSection = kMeta.build;
+class NormoGramSettings final : public Section<NormoGramSettings> {
+public:
+	NormoGramSettings(
+		QWidget *parent,
+		not_null<Window::SessionController*> controller);
+
+	[[nodiscard]] rpl::producer<QString> title() override;
+
+private:
+	void setupContent();
+
+};
 
 NormoGramSettings::NormoGramSettings(
-		QWidget *parent,
-		not_null<Window::SessionController*> controller)
+	QWidget *parent,
+	not_null<Window::SessionController*> controller)
 : Section(parent, controller) {
 	setupContent();
 }
@@ -101,9 +98,36 @@ rpl::producer<QString> NormoGramSettings::title() {
 
 void NormoGramSettings::setupContent() {
 	const auto content = Ui::CreateChild<Ui::VerticalLayout>(this);
-	build(content, kNormoGramSection);
+
+	const auto buildMethod = [](
+			not_null<Ui::VerticalLayout*> container,
+			not_null<Window::SessionController*> controller,
+			Fn<void(Type)> showOther,
+			rpl::producer<> showFinished) {
+		const auto isPaused = Window::PausedIn(
+			controller,
+			Window::GifPauseReason::Layer);
+		auto builder = SectionBuilder(WidgetContext{
+			.container = container,
+			.controller = controller,
+			.showOther = std::move(showOther),
+			.isPaused = isPaused,
+		});
+		BuildNormoGramSectionContent(builder);
+	};
+
+	build(content, buildMethod);
 	Ui::ResizeFitChild(this, content);
 }
+
+const auto kMeta = BuildHelper({
+	.id = NormoGramSettings::Id(),
+	.parentId = MainId(),
+	.title = &tr::lng_normogram_settings,
+	.icon = &st::menuIconManage,
+}, [](SectionBuilder &builder) {
+	BuildNormoGramSectionContent(builder);
+});
 
 } // namespace
 
