@@ -1,0 +1,5 @@
+# Local credential files — never commit Telegram API credentials.
+normogram-api.local.properties
+.ci-*.txt
+.ci-*.zip
+.gh-token.tmp

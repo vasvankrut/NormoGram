@@ -154,6 +154,11 @@ android {
                 targets 'tmessages.49'
             }
         }
+
+        // NormoGram API credentials are provided by the owner and never stored
+        // in this repository. CI passes them through android/local.properties.
+        buildConfigField "int", "NORMOGRAM_API_ID", (getProps("NORMOGRAM_API_ID") ?: "0")
+        buildConfigField "String", "NORMOGRAM_API_HASH", "\"" + (getProps("NORMOGRAM_API_HASH") ?: "") + "\""
     }
 
     buildTypes {
