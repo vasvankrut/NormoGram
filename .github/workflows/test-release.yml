@@ -2,6 +2,8 @@ name: Build and publish test installers
 
 on:
   push:
+    branches:
+      - main
     tags:
       - "v*"
   workflow_dispatch:
@@ -43,7 +45,7 @@ jobs:
           keytool -genkeypair -noprompt -keystore TMessagesProj/config/release.keystore \
             -storepass android -keypass android -alias androidkey -keyalg RSA -keysize 2048 \
             -validity 3650 -dname "CN=NormoGram Test Build, OU=CI, O=NormoGram, L=Unknown, ST=Unknown, C=US"
-          cat > TMessagesProj_AppStandalone/google-services.json <<'JSON'
+          cat > TMessagesProj/google-services.json <<'JSON'
           {
             "project_info": {
               "project_number": "123456789012",
