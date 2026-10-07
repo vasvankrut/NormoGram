@@ -40,7 +40,35 @@ jobs:
         uses: android-actions/setup-android@v4
 
       - name: Install Android build packages
-        run: sdkmanager "platforms;android-36" "build-tools;36.0.0" "ndk;27.2.12479018" "cmake;3.22.1"
+        env:
+          ANDROID_SDK_ROOT: ${{ env.ANDROID_SDK_ROOT }}
+        run: |
+          set -uo pipefail
+          PACKAGES=("platforms;android-36" "build-tools;36.0.0" "ndk;27.2.12479018" "cmake;3.22.1")
+          installed=0
+          for attempt in 1 2 3 4; do
+            echo "::group::sdkmanager attempt $attempt"
+            yes | sdkmanager --licenses >/dev/null 2>&1 || true
+            if sdkmanager "${PACKAGES[@]}"; then
+              installed=1
+              echo "::endgroup::"
+              break
+            fi
+            echo "::endgroup::"
+            echo "sdkmanager attempt $attempt failed; removing partially downloaded packages"
+            rm -rf "${ANDROID_SDK_ROOT}/ndk/27.2.12479018" \
+                   "${ANDROID_SDK_ROOT}/.temp" \
+                   "${ANDROID_SDK_ROOT}/.knownPackages" || true
+            sleep $((attempt * 15))
+          done
+          if [ "$installed" != "1" ]; then
+            echo "sdkmanager could not install the required packages after 4 attempts"
+            exit 1
+          fi
+          test -d "${ANDROID_SDK_ROOT}/platforms/android-36"
+          test -d "${ANDROID_SDK_ROOT}/build-tools/36.0.0"
+          test -d "${ANDROID_SDK_ROOT}/ndk/27.2.12479018"
+          test -d "${ANDROID_SDK_ROOT}/cmake/3.22.1"
 
       - name: Prepare test-only Firebase config and signing key
         working-directory: android
@@ -80,7 +108,17 @@ jobs:
 
       - name: Build universal test APK
         working-directory: android
-        run: bash ./gradlew --no-daemon :TMessagesProj_AppStandalone:assembleAfatDebug
+        run: |
+          set -uo pipefail
+          for attempt in 1 2 3; do
+            if bash ./gradlew --no-daemon :TMessagesProj_AppStandalone:assembleAfatDebug; then
+              exit 0
+            fi
+            echo "gradle attempt $attempt failed; retrying"
+            sleep $((attempt * 20))
+          done
+          echo "gradle build failed after 3 attempts"
+          exit 1
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
