@@ -316,7 +316,7 @@ QString MessageAccessibilityName(
 		+ u" "_q
 		+ Ui::FormatTime(
 			dateTime.time(),
-			Settings::NormoGramShowSeconds()));
+			::Settings::NormoGramShowSeconds()));
 	if (const auto views = item->Get<HistoryMessageViews>()) {
 		if (views->views.count >= 0) {
 			statusParts.push_back(
@@ -725,7 +725,7 @@ QString MessageSubItemValue(
 			+ u" "_q
 			+ Ui::FormatTime(
 				dateTime.time(),
-				Settings::NormoGramShowSeconds());
+				::Settings::NormoGramShowSeconds());
 	}
 	case MessageSubItem::Reactions: {
 		const auto &reactions = data->reactions();

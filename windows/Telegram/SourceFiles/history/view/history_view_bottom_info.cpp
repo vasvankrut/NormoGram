@@ -74,7 +74,7 @@ namespace {
 	const auto today = QDateTime::currentDateTime().date();
 	const auto time = Ui::FormatTime(
 		edited.time(),
-		Settings::NormoGramShowSeconds());
+		::Settings::NormoGramShowSeconds());
 	if (sent.date() == today && edited.date() == today) {
 		return tr::lng_edited_at(tr::now, lt_time, time);
 	}
@@ -508,10 +508,10 @@ void BottomInfo::layoutDateText() {
 		: edited + ((_data.flags & Data::Flag::ForwardedDate)
 		? Ui::FormatDateTimeSavedFrom(
 			_data.date,
-			Settings::NormoGramShowSeconds())
+			::Settings::NormoGramShowSeconds())
 		: Ui::FormatTime(
 			_data.date.time(),
-			Settings::NormoGramShowSeconds()));
+			::Settings::NormoGramShowSeconds()));
 	const auto afterAuthor = prefix + date;
 	const auto afterAuthorWidth = st::msgDateFont->width(afterAuthor);
 	const auto authorWidth = st::msgDateFont->width(author);

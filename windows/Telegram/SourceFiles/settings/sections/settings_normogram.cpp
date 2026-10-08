@@ -23,6 +23,8 @@ For license and copyright information please follow the link in the repository r
 namespace Settings {
 namespace {
 
+using namespace Builder;
+
 constexpr auto kShowSecondsKey = "normogram/show-seconds";
 constexpr auto kNightIconKey = "normogram/night-icon";
 

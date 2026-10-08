@@ -2467,7 +2467,7 @@ void AddWhenEditedForwardedAuthorActionHelper(
 						lt_time,
 						Ui::FormatTime(
 							sent.time(),
-							Settings::NormoGramShowSeconds()))));
+							::Settings::NormoGramShowSeconds()))));
 				label->setAttribute(Qt::WA_TransparentForMouseEvents);
 				menu->addAction(std::move(label));
 			} else {

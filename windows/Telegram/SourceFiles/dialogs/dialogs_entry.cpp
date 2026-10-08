@@ -356,7 +356,7 @@ DateText ResolveDateText(
 		const auto qdt = base::unixtime::parse(date);
 		cache.text = Ui::FormatDialogsDate(
 			qdt,
-			Settings::NormoGramShowSeconds());
+			::Settings::NormoGramShowSeconds());
 		cache.width = st::dialogsDateFont->width(cache.text);
 		cache.messageTimeId = date;
 		cache.todaySerial = LastTodaySerial;

@@ -2047,7 +2047,7 @@ Section DetailsFiller::makePersonalChannel(not_null<UserData*> user) {
 				line,
 				Ui::FormatDialogsDate(
 					ItemDateTime(item),
-					Settings::NormoGramShowSeconds()),
+					::Settings::NormoGramShowSeconds()),
 				st::infoPersonalChannelDateLabel);
 
 			const auto name = Ui::CreateChild<Ui::FlatLabel>(

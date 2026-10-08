@@ -141,11 +141,11 @@ namespace {
 				+ u" "_q
 				+ Ui::FormatTime(
 					dateTime.time(),
-					Settings::NormoGramShowSeconds());
+					::Settings::NormoGramShowSeconds());
 		} else {
 			timeText = Ui::FormatDateTime(
 				dateTime,
-				Settings::NormoGramShowSeconds());
+				::Settings::NormoGramShowSeconds());
 		}
 		parts << timeText;
 	}
@@ -507,7 +507,7 @@ QString SubItemValue(
 		}
 		return Ui::FormatDateTime(
 			dateTime,
-			Settings::NormoGramShowSeconds());
+			::Settings::NormoGramShowSeconds());
 	}
 	case SubItem::Sponsored: {
 		if (history->useTopPromotion()) {
