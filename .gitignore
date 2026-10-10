@@ -3,3 +3,5 @@ normogram-api.local.properties
 .ci-*.txt
 .ci-*.zip
 .gh-token.tmp
+.release-dl/
+HANDOVER-AI.md
