@@ -501,7 +501,7 @@ public class ChannelRecommendationsCell {
             if (obj instanceof TLRPC.Chat) {
                 final TLRPC.Chat chat = (TLRPC.Chat) obj;
                 if (chat.participants_count <= 1) return null;
-                return LocaleController.formatShortNumber(chat.participants_count, null);
+                return LocaleController.formatMembersCount(chat.participants_count, null);
             } else if (obj instanceof TLRPC.User) {
                 final TLRPC.User user = (TLRPC.User) obj;
                 if (user.bot_active_users <= 1) return null;

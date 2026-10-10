@@ -223,6 +223,8 @@ public class SharedConfig {
     public static boolean fastWallpaperDisabled;
     public static boolean frameMetricsEnabled;
     public static boolean normogramShowSeconds;
+    public static boolean normogramDontRoundViews;
+    public static boolean normogramDontRoundMembers;
 
     public static String directShareHash;
 
@@ -495,6 +497,8 @@ public class SharedConfig {
                 editor.putBoolean("floatingDebugActive", isFloatingDebugActive);
                 editor.putBoolean("record_via_sco", recordViaSco);
                 editor.putBoolean("normogramShowSeconds", normogramShowSeconds);
+                editor.putBoolean("normogramDontRoundViews", normogramDontRoundViews);
+                editor.putBoolean("normogramDontRoundMembers", normogramDontRoundMembers);
                 editor.apply();
             } catch (Exception e) {
                 FileLog.e(e);
@@ -617,6 +621,8 @@ public class SharedConfig {
             useSystemEmoji = preferences.getBoolean("useSystemEmoji", false);
             useSystemBoldFont = preferences.getBoolean("useSystemBoldFont", false);
             normogramShowSeconds = preferences.getBoolean("normogramShowSeconds", false);
+            normogramDontRoundViews = preferences.getBoolean("normogramDontRoundViews", false);
+            normogramDontRoundMembers = preferences.getBoolean("normogramDontRoundMembers", false);
             forceForumTabs = preferences.getBoolean("forceForumTabs", false);
             fastWallpaperDisabled = preferences.getBoolean("fastWallpaperDisabled", false);
             frameMetricsEnabled = preferences.getBoolean("frameMetricsEnabled", false);

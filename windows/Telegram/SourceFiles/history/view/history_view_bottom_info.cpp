@@ -562,9 +562,12 @@ void BottomInfo::layoutViewsText() {
 		_views.clear();
 		return;
 	}
+	const auto count = std::max(*_data.views, 1);
 	_views.setText(
 		st::msgDateTextStyle,
-		Lang::FormatCountToShort(std::max(*_data.views, 1)).string,
+		Settings::NormoGramDontRoundViews()
+			? Lang::FormatCountDecimal(count)
+			: Lang::FormatCountToShort(count).string,
 		Ui::NameTextOptions());
 }
 

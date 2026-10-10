@@ -11236,11 +11236,20 @@
     <string name="RoundVideoCompositionEnabled">Round video styling</string>
     <string name="RoundVideoCompositionInfo">Disable styling to record a plain square without outside-circle blur, dimming or Telegram overlays.</string>
     <string name="NormoGramSettings">NormoGram</string>
-    <string name="NormoGramSettingsInfo">App icon and message time options</string>
+    <string name="NormoGramSettingsInfo">App icon and number formatting options</string>
     <string name="NormoGramAppIcon">App icon</string>
     <string name="NormoGramAppIconInfo">Choose the icon shown by your device launcher.</string>
     <string name="NormoGramShowSeconds">Show seconds in message times</string>
     <string name="NormoGramShowSecondsInfo">When enabled, message times include seconds, for example 12:21:23.</string>
     <string name="NormoGramIconBlue">NormoGram blue</string>
     <string name="NormoGramIconNight">NormoGram midnight</string>
+    <string name="NormoGramIconOriginal">Original Telegram</string>
+    <string name="NormoGramIconCustom">Upload your own…</string>
+    <string name="NormoGramIconCustomInfo">A shortcut with your picture will be added to the home screen. Add it manually if your launcher asks for confirmation.</string>
+    <string name="NormoGramRounding">Rounding</string>
+    <string name="NormoGramRoundingInfo">How seconds and large counters are shown.</string>
+    <string name="NormoGramDontRoundViews">Don\'t round post view counts</string>
+    <string name="NormoGramDontRoundViewsInfo">Show exact view counts on channel posts instead of shortened numbers like 1.2K.</string>
+    <string name="NormoGramDontRoundMembers">Don\'t round subscriber/member counts</string>
+    <string name="NormoGramDontRoundMembersInfo">Show exact subscriber and member counts of channels and groups instead of shortened numbers like 1.2K.</string>
 </resources>

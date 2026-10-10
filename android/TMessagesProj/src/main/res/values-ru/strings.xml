@@ -265,11 +265,20 @@
     <string name="RemindDayAt">\'Отправить\' d MMM \'в\' HH:mm</string>
     <string name="RemindDayYearAt">\'Напомнить\' d MMM yyyy \'в\' HH:mm</string>
     <string name="NormoGramSettings">Настройки NormoGram</string>
-    <string name="NormoGramSettingsInfo">Иконка приложения и время сообщений</string>
+    <string name="NormoGramSettingsInfo">Иконка приложения и формат чисел</string>
     <string name="NormoGramAppIcon">Иконка приложения</string>
     <string name="NormoGramAppIconInfo">Выберите значок, который будет отображаться на главном экране устройства.</string>
     <string name="NormoGramShowSeconds">Показывать секунды во времени сообщений</string>
     <string name="NormoGramShowSecondsInfo">При включении время сообщений будет показываться с секундами, например 12:21:23.</string>
     <string name="NormoGramIconBlue">NormoGram — синий</string>
     <string name="NormoGramIconNight">NormoGram — ночной</string>
+    <string name="NormoGramIconOriginal">Оригинальный Telegram</string>
+    <string name="NormoGramIconCustom">Загрузить свою…</string>
+    <string name="NormoGramIconCustomInfo">На главный экран будет добавлен ярлык с вашей картинкой. Если лаунчер запросит подтверждение — добавьте его вручную.</string>
+    <string name="NormoGramRounding">Округление</string>
+    <string name="NormoGramRoundingInfo">Как показываются секунды и большие числа.</string>
+    <string name="NormoGramDontRoundViews">Не округлять число просмотров</string>
+    <string name="NormoGramDontRoundViewsInfo">Показывать точное число просмотров на постах вместо сокращённого, например 1,2К.</string>
+    <string name="NormoGramDontRoundMembers">Не округлять число подписчиков и участников</string>
+    <string name="NormoGramDontRoundMembersInfo">Показывать точное число подписчиков и участников каналов и групп вместо сокращённого, например 1,2К.</string>
 </resources>

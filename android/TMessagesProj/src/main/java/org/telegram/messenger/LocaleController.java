@@ -2888,6 +2888,23 @@ public class LocaleController {
         }
     }
 
+    public static String formatViewsCount(int number) {
+        if (SharedConfig.normogramDontRoundViews) {
+            return formatNumber((long) number, ' ');
+        }
+        return formatShortNumber(number, null);
+    }
+
+    public static String formatMembersCount(int number, int[] rounded) {
+        if (SharedConfig.normogramDontRoundMembers) {
+            if (rounded != null) {
+                rounded[0] = number;
+            }
+            return formatNumber((long) number, ' ');
+        }
+        return formatShortNumber(number, rounded);
+    }
+
     public static String formatUserStatus(int currentAccount, TLRPC.User user) {
         return formatUserStatus(currentAccount, user, null);
     }

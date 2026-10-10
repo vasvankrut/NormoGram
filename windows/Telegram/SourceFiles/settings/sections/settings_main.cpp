@@ -381,6 +381,13 @@ void BuildSectionButtons(SectionBuilder &builder) {
 	}
 
 	builder.addSectionButton({
+		.title = tr::lng_normogram_settings(),
+		.targetSection = NormoGramId(),
+		.icon = { &st::menuIconManage },
+		.keywords = { u"normogram"_q, u"seconds"_q, u"icon"_q, u"rounding"_q },
+	});
+
+	builder.addSectionButton({
 		.title = tr::lng_settings_section_notify(),
 		.targetSection = NotificationsId(),
 		.icon = { &st::menuIconNotifications },
@@ -440,13 +447,6 @@ void BuildSectionButtons(SectionBuilder &builder) {
 		.targetSection = AdvancedId(),
 		.icon = { &st::menuIconManage },
 		.keywords = { u"performance"_q, u"proxy"_q, u"experimental"_q },
-	});
-
-	builder.addSectionButton({
-		.title = tr::lng_normogram_settings(),
-		.targetSection = NormoGramId(),
-		.icon = { &st::menuIconManage },
-		.keywords = { u"normogram"_q, u"seconds"_q, u"icon"_q },
 	});
 
 	builder.addSectionButton({

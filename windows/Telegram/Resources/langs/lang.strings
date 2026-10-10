@@ -9,8 +9,15 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 "lng_switch_to_this" = "Continue in English";
 
 "lng_normogram_settings" = "NormoGram";
+"lng_normogram_app_icon" = "App icon";
+"lng_normogram_icon_blue" = "NormoGram blue";
+"lng_normogram_icon_night" = "NormoGram midnight";
+"lng_normogram_icon_original" = "Original Telegram";
+"lng_normogram_icon_custom" = "Upload your own…";
+"lng_normogram_rounding" = "Rounding";
 "lng_normogram_show_seconds" = "Show seconds in message times";
-"lng_normogram_night_icon" = "Use the midnight app icon";
+"lng_normogram_dont_round_views" = "Don't round post view counts";
+"lng_normogram_dont_round_members" = "Don't round subscriber/member counts";
 
 "lng_menu_contacts" = "Contacts";
 "lng_menu_calls" = "Calls";

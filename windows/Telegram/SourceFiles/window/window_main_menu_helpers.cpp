@@ -18,6 +18,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "data/data_user.h"
 #include "inline_bots/bot_attach_web_view.h"
 #include "lang/lang_keys.h"
+#include "settings/sections/settings_normogram.h"
 #include "lottie/lottie_icon.h"
 #include "main/main_session.h"
 #include "ui/controls/userpic_button.h"
@@ -169,7 +170,9 @@ not_null<Ui::SettingsButton*> AddMyChannelsBox(
 						? tr::lng_chat_status_subscribers
 						: tr::lng_chat_status_members)(
 							tr::now,
-							lt_count,
+							Settings::NormoGramDontRoundMembers()
+								? lt_count_decimal
+								: lt_count,
 							count)
 					: QString());
 			row->paintRequest() | rpl::on_next([=] {

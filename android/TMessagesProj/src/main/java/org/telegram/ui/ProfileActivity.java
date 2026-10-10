@@ -11685,7 +11685,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                         }
                     } else {
                         int[] result = new int[1];
-                        String shortNumber = LocaleController.formatShortNumber(chatInfo.participants_count, result);
+                        String shortNumber = LocaleController.formatMembersCount(chatInfo.participants_count, result);
                         if (currentChat.megagroup) {
                             statusString = LocaleController.formatPluralString("Members", chatInfo.participants_count);
                             profileStatusString = LocaleController.formatPluralStringComma("Members", chatInfo.participants_count);
@@ -11829,7 +11829,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                     } else if (a == 0 && ChatObject.isChannel(currentChat) && chatInfo != null && chatInfo.participants_count != 0 && (currentChat.megagroup || currentChat.broadcast)) {
                         int[] result = new int[1];
                         boolean ignoreShort = AndroidUtilities.isAccessibilityScreenReaderEnabled();
-                        String shortNumber = ignoreShort ? String.valueOf(result[0] = chatInfo.participants_count) : LocaleController.formatShortNumber(chatInfo.participants_count, result);
+                        String shortNumber = ignoreShort ? String.valueOf(result[0] = chatInfo.participants_count) : LocaleController.formatMembersCount(chatInfo.participants_count, result);
                         if (currentChat.megagroup) {
                             if (chatInfo.participants_count == 0) {
                                 if (chat.has_geo) {

@@ -141,9 +141,9 @@ const char kOptionNewWindowsSizeAsFirst[] = "new-windows-size-as-first";
 const char kOptionDisableTouchbar[] = "touchbar-disabled";
 
 const QImage &Logo() {
-	static const auto blue = QImage(u":/gui/art/normogram-blue.png"_q);
-	static const auto night = QImage(u":/gui/art/normogram-night.png"_q);
-	return ::Settings::NormoGramUseNightIcon() ? night : blue;
+	static auto image = QImage();
+	image = ::Settings::NormoGramIconImage();
+	return image;
 }
 
 const QImage &LogoNoMargin() {
